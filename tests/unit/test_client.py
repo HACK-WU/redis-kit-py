@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Tencent is pleased to support the open source community by making 蓝鲸智云 - 监控平台 (BlueKing - Monitor) available.
 Copyright (C) 2017-2025 Tencent. All rights reserved.
@@ -81,10 +80,7 @@ class TestRedisClientSingleton:
         """测试密码哈希的稳定性"""
         config = NodeConfig(host="localhost", port=6379, db=0, password="test_password")
 
-        # 多次调用应该生成相同的 cache_key
-        cache_key1 = f"{config.host}:{config.port}:{config.db}:test:{hashlib.md5(config.password.encode('utf-8')).hexdigest()}"
-
-        # 实际上 RedisClient 内部使用 hashlib.md5
+        # RedisClient 内部使用 hashlib.md5 生成 cache_key
         client1 = RedisClient.get_instance(config, backend="test")
 
         # 清除缓存后再获取
@@ -307,6 +303,3 @@ class TestRedisClientEdgeCases:
         client2 = RedisClient.get_instance(config2, backend="test")
 
         assert client1 is not client2
-
-
-import hashlib

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Tencent is pleased to support the open source community by making 蓝鲸智云 - 监控平台 (BlueKing - Monitor) available.
 Copyright (C) 2017-2025 Tencent. All rights reserved.
@@ -15,7 +14,8 @@ redis-kit 锁装饰器模块
 
 import functools
 import logging
-from typing import Any, Callable, TypeVar, Union
+from typing import Any, TypeVar
+from collections.abc import Callable
 
 from redis_kit.exceptions import LockAcquisitionError
 from redis_kit.lock.redis_lock import RedisLock
@@ -27,7 +27,7 @@ F = TypeVar("F", bound=Callable[..., Any])
 
 def service_lock(
     client: Any,
-    lock_name: Union[str, Callable[..., str]],
+    lock_name: str | Callable[..., str],
     ttl: int = 60,
     blocking: bool = True,
     timeout: float = None,
@@ -169,9 +169,11 @@ def rate_limited(
 
         # 按用户限流
         >>> @rate_limited(
-        ...     client, "user_api",
-        ...     max_calls=10, period=60,
-        ...     key_func=lambda args, kwargs: kwargs.get("user_id", "default")
+        ...     client,
+        ...     "user_api",
+        ...     max_calls=10,
+        ...     period=60,
+        ...     key_func=lambda args, kwargs: kwargs.get("user_id", "default"),
         ... )
         ... def user_api(user_id):
         ...     pass

@@ -131,4 +131,4 @@ celerybeat.pid
 .env
 .venv
 env/
-
+uv.lock

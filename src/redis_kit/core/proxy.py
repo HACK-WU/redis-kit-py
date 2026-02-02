@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Tencent is pleased to support the open source community by making 蓝鲸智云 - 监控平台 (BlueKing - Monitor) available.
 Copyright (C) 2017-2025 Tencent. All rights reserved.
@@ -14,7 +13,8 @@ redis-kit Redis 代理模块
 """
 
 import logging
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional
+from typing import TYPE_CHECKING, Any
+from collections.abc import Callable
 
 from redis_kit.core.retry import RetryHandler
 from redis_kit.routing.base import BaseRoutingStrategy, RoutingManager
@@ -78,9 +78,7 @@ class KeyExtractor:
     )
 
     @classmethod
-    def extract(
-        cls, command_name: str, args: tuple, kwargs: dict
-    ) -> Optional[ShardedKey]:
+    def extract(cls, command_name: str, args: tuple, kwargs: dict) -> ShardedKey | None:
         """
         从命令参数中提取键
 
@@ -116,7 +114,7 @@ class KeyExtractor:
     @classmethod
     def extract_shard_key(
         cls, command_name: str, args: tuple, kwargs: dict
-    ) -> Optional[str]:
+    ) -> str | None:
         """
         从命令参数中提取分片键
 
@@ -157,9 +155,9 @@ class RedisProxy:
         backend: str,
         routing_manager: RoutingManager = None,
         routing_strategy: BaseRoutingStrategy = None,
-        nodes: List[RedisNodeProtocol] = None,
+        nodes: list[RedisNodeProtocol] = None,
         retry_policy: RetryPolicy = None,
-        middlewares: List[MiddlewareProtocol] = None,
+        middlewares: list[MiddlewareProtocol] = None,
         db: int = None,
     ):
         """
@@ -176,8 +174,8 @@ class RedisProxy:
         """
         self.backend = backend
         self.db = db
-        self._client_pool: Dict[str, Any] = {}
-        self._pipeline: Optional["PipelineProxy"] = None
+        self._client_pool: dict[str, Any] = {}
+        self._pipeline: PipelineProxy | None = None
 
         # 初始化路由管理器
         if routing_manager:
@@ -196,7 +194,7 @@ class RedisProxy:
         self.key_extractor = KeyExtractor()
 
     @property
-    def nodes(self) -> List[RedisNodeProtocol]:
+    def nodes(self) -> list[RedisNodeProtocol]:
         """获取节点列表"""
         return self.routing_manager.nodes
 
@@ -230,7 +228,7 @@ class RedisProxy:
             self._client_pool[node.node_id] = node.get_client(self.backend, self.db)
         return self._client_pool[node.node_id]
 
-    def get_node_by_shard_key(self, shard_key: Optional[str]) -> RedisNodeProtocol:
+    def get_node_by_shard_key(self, shard_key: str | None) -> RedisNodeProtocol:
         """
         根据分片键获取节点
 
@@ -318,7 +316,7 @@ class RedisProxy:
 
     def execute_on_all_nodes(
         self, command_name: str, *args, **kwargs
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         在所有节点上执行命令
 

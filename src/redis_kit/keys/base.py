@@ -37,7 +37,12 @@ class RedisDataKey:
         label: 键的描述标签
 
     Example:
-        >>> user_key = RedisDataKey(key_tpl="user:{user_id}:profile", ttl=3600, backend="cache", label="用户信息缓存")
+        >>> user_key = RedisDataKey(
+        ...     key_tpl="user:{user_id}:profile",
+        ...     ttl=3600,
+        ...     backend="cache",
+        ...     label="用户信息缓存",
+        ... )
         >>> key = user_key.get_key(user_id=123, shard_key="123")
         >>> print(key)
         user:123:profile

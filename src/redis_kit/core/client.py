@@ -207,7 +207,12 @@ class SentinelRedisClient(RedisClient):
     支持 Redis Sentinel 高可用模式。
 
     Example:
-        >>> config = NodeConfig(host="sentinel-host", port=26379, cache_type="sentinel", master_name="mymaster")
+        >>> config = NodeConfig(
+        ...     host="sentinel-host",
+        ...     port=26379,
+        ...     cache_type="sentinel",
+        ...     master_name="mymaster",
+        ... )
         >>> client = SentinelRedisClient(config)
     """
 

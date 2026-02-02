@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Tencent is pleased to support the open source community by making 蓝鲸智云 - 监控平台 (BlueKing - Monitor) available.
 Copyright (C) 2017-2025 Tencent. All rights reserved.
@@ -16,7 +15,7 @@ redis-kit 配置加载器模块
 import os
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 from redis_kit.config.schema import RedisKitConfig
 from redis_kit.exceptions import ConfigurationError, MissingConfigError
@@ -50,15 +49,13 @@ class DictConfigLoader(ConfigLoader):
     从 Python 字典加载配置。
 
     Example:
-        >>> loader = DictConfigLoader({
-        ...     "nodes": {
-        ...         "default": {"host": "localhost", "port": 6379}
-        ...     }
-        ... })
+        >>> loader = DictConfigLoader(
+        ...     {"nodes": {"default": {"host": "localhost", "port": 6379}}}
+        ... )
         >>> config = loader.load()
     """
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: dict[str, Any]):
         """
         初始化加载器
 
@@ -105,7 +102,7 @@ class YamlConfigLoader(ConfigLoader):
             raise MissingConfigError(str(self._path))
 
         try:
-            with open(self._path, "r", encoding="utf-8") as f:
+            with open(self._path, encoding="utf-8") as f:
                 config = yaml.safe_load(f)
         except Exception as e:
             raise ConfigurationError(f"Failed to load YAML config: {e}")
@@ -149,7 +146,7 @@ class EnvConfigLoader(ConfigLoader):
 
     def load(self) -> RedisKitConfig:
         """加载配置"""
-        config: Dict[str, Any] = {"nodes": {}, "backends": {}}
+        config: dict[str, Any] = {"nodes": {}, "backends": {}}
 
         for key, value in os.environ.items():
             if not key.startswith(self._prefix):
@@ -171,7 +168,7 @@ class EnvConfigLoader(ConfigLoader):
         return RedisKitConfig.from_dict(config)
 
     def _parse_node_config(
-        self, field_path: str, value: str, config: Dict[str, Any]
+        self, field_path: str, value: str, config: dict[str, Any]
     ) -> None:
         """解析节点配置"""
         parts = field_path.split("_", 1)
@@ -187,7 +184,7 @@ class EnvConfigLoader(ConfigLoader):
         config["nodes"][node_id][field] = self._parse_value(value)
 
     def _parse_backend_config(
-        self, field_path: str, value: str, config: Dict[str, Any]
+        self, field_path: str, value: str, config: dict[str, Any]
     ) -> None:
         """解析后端配置"""
         parts = field_path.split("_", 1)
@@ -203,7 +200,7 @@ class EnvConfigLoader(ConfigLoader):
         config["backends"][backend_name][field] = self._parse_value(value)
 
     def _parse_general_config(
-        self, field_path: str, value: str, config: Dict[str, Any]
+        self, field_path: str, value: str, config: dict[str, Any]
     ) -> None:
         """解析通用配置"""
         field = field_path.lower()
@@ -244,11 +241,13 @@ class CompositeConfigLoader(ConfigLoader):
     按优先级从多个来源加载配置，后面的覆盖前面的。
 
     Example:
-        >>> loader = CompositeConfigLoader([
-        ...     YamlConfigLoader("default.yaml"),
-        ...     YamlConfigLoader("local.yaml"),
-        ...     EnvConfigLoader(),
-        ... ])
+        >>> loader = CompositeConfigLoader(
+        ...     [
+        ...         YamlConfigLoader("default.yaml"),
+        ...         YamlConfigLoader("local.yaml"),
+        ...         EnvConfigLoader(),
+        ...     ]
+        ... )
         >>> config = loader.load()
     """
 
@@ -263,7 +262,7 @@ class CompositeConfigLoader(ConfigLoader):
 
     def load(self) -> RedisKitConfig:
         """加载配置"""
-        merged_config: Dict[str, Any] = {}
+        merged_config: dict[str, Any] = {}
 
         for loader in self._loaders:
             try:
@@ -278,7 +277,7 @@ class CompositeConfigLoader(ConfigLoader):
 
         return RedisKitConfig.from_dict(merged_config)
 
-    def _deep_merge(self, base: Dict, override: Dict) -> Dict:
+    def _deep_merge(self, base: dict, override: dict) -> dict:
         """深度合并字典"""
         result = base.copy()
         for key, value in override.items():
@@ -294,7 +293,7 @@ class CompositeConfigLoader(ConfigLoader):
 
 
 def load_config(
-    config: Dict[str, Any] = None,
+    config: dict[str, Any] = None,
     yaml_path: str = None,
     env_prefix: str = None,
 ) -> RedisKitConfig:

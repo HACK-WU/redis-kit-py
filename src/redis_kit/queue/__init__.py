@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Tencent is pleased to support the open source community by making 蓝鲸智云 - 监控平台 (BlueKing - Monitor) available.
 Copyright (C) 2017-2025 Tencent. All rights reserved.
@@ -8,19 +7,13 @@ Unless required by applicable law or agreed to in writing, software distributed 
 an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
 specific language governing permissions and limitations under the License.
 
-redis-kit 键对象模块
+redis-kit 队列模块
 """
 
-from redis_kit.keys.base import RedisDataKey
-from redis_kit.keys.types import HashKey, ListKey, SetKey, SortedSetKey, StringKey
-from redis_kit.types import ShardedKey
+from redis_kit.queue.delay_queue import DelayQueue, DelayQueueManager, DelayQueueWorker
 
 __all__ = [
-    "RedisDataKey",
-    "StringKey",
-    "HashKey",
-    "SetKey",
-    "ListKey",
-    "SortedSetKey",
-    "ShardedKey",
+    "DelayQueue",
+    "DelayQueueWorker",
+    "DelayQueueManager",
 ]

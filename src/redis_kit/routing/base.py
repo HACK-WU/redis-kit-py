@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Tencent is pleased to support the open source community by making 蓝鲸智云 - 监控平台 (BlueKing - Monitor) available.
 Copyright (C) 2017-2025 Tencent. All rights reserved.
@@ -15,7 +14,6 @@ redis-kit 路由策略基础模块
 
 from abc import ABC, abstractmethod
 from functools import lru_cache
-from typing import Dict, List, Optional
 
 from redis_kit.exceptions import NoAvailableNodeError
 from redis_kit.types import RedisNodeProtocol, ShardedKey
@@ -36,7 +34,7 @@ class BaseRoutingStrategy(ABC):
 
     @abstractmethod
     def route(
-        self, shard_key: Optional[str], nodes: List[RedisNodeProtocol]
+        self, shard_key: str | None, nodes: list[RedisNodeProtocol]
     ) -> RedisNodeProtocol:
         """
         根据分片键选择 Redis 节点
@@ -53,7 +51,7 @@ class BaseRoutingStrategy(ABC):
         """
         pass
 
-    def select_fallback(self, nodes: List[RedisNodeProtocol]) -> RedisNodeProtocol:
+    def select_fallback(self, nodes: list[RedisNodeProtocol]) -> RedisNodeProtocol:
         """
         默认回退策略：选择第一个可用节点
 
@@ -72,8 +70,8 @@ class BaseRoutingStrategy(ABC):
         return available[0]
 
     def filter_available(
-        self, nodes: List[RedisNodeProtocol]
-    ) -> List[RedisNodeProtocol]:
+        self, nodes: list[RedisNodeProtocol]
+    ) -> list[RedisNodeProtocol]:
         """
         过滤可用节点
 
@@ -105,7 +103,7 @@ class RoutingManager:
     def __init__(
         self,
         strategy: BaseRoutingStrategy,
-        nodes: List[RedisNodeProtocol] = None,
+        nodes: list[RedisNodeProtocol] = None,
         cache_size: int = 10000,
     ):
         """
@@ -117,9 +115,9 @@ class RoutingManager:
             cache_size: LRU 缓存大小，默认 10000
         """
         self.strategy = strategy
-        self._nodes: List[RedisNodeProtocol] = nodes or []
+        self._nodes: list[RedisNodeProtocol] = nodes or []
         self._cache_size = cache_size
-        self._node_map: Dict[str, RedisNodeProtocol] = {}
+        self._node_map: dict[str, RedisNodeProtocol] = {}
         self._update_node_map()
         self._setup_cache()
 
@@ -131,14 +129,14 @@ class RoutingManager:
         """设置路由缓存"""
 
         @lru_cache(maxsize=self._cache_size)
-        def cached_route(shard_key: Optional[str]) -> str:
+        def cached_route(shard_key: str | None) -> str:
             node = self.strategy.route(shard_key, self._nodes)
             return node.node_id
 
         self._cached_route = cached_route
 
     @property
-    def nodes(self) -> List[RedisNodeProtocol]:
+    def nodes(self) -> list[RedisNodeProtocol]:
         """获取节点列表"""
         return self._nodes
 
@@ -157,7 +155,7 @@ class RoutingManager:
         """
         return self.get_node_by_shard_key(key.shard_key)
 
-    def get_node_by_shard_key(self, shard_key: Optional[str]) -> RedisNodeProtocol:
+    def get_node_by_shard_key(self, shard_key: str | None) -> RedisNodeProtocol:
         """
         根据分片键获取节点
 
@@ -185,7 +183,7 @@ class RoutingManager:
             # 缓存路由失败，直接调用策略
             return self.strategy.route(shard_key, self._nodes)
 
-    def get_node_by_id(self, node_id: str) -> Optional[RedisNodeProtocol]:
+    def get_node_by_id(self, node_id: str) -> RedisNodeProtocol | None:
         """
         根据节点 ID 获取节点
 
@@ -201,7 +199,7 @@ class RoutingManager:
         """清除路由缓存"""
         self._cached_route.cache_clear()
 
-    def update_nodes(self, nodes: List[RedisNodeProtocol]) -> None:
+    def update_nodes(self, nodes: list[RedisNodeProtocol]) -> None:
         """
         更新节点列表
 

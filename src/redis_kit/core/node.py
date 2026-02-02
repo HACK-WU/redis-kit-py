@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Tencent is pleased to support the open source community by making 蓝鲸智云 - 监控平台 (BlueKing - Monitor) available.
 Copyright (C) 2017-2025 Tencent. All rights reserved.
@@ -14,7 +13,7 @@ redis-kit 节点模块
 """
 
 import logging
-from typing import Any, Dict
+from typing import Any
 
 from redis_kit.types import NodeConfig
 
@@ -47,7 +46,7 @@ class RedisNode:
         """
         self.config = config
         self._node_id = node_id or self._generate_node_id()
-        self._instance_pool: Dict[str, Any] = {}
+        self._instance_pool: dict[str, Any] = {}
         self._available = True
 
     def _generate_node_id(self) -> str:
@@ -71,7 +70,7 @@ class RedisNode:
 
     def get_connection_kwargs(
         self, backend: str = None, db: int = None
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         获取连接参数
 
@@ -187,7 +186,7 @@ class SentinelRedisNode(RedisNode):
         ...     host="sentinel-host",
         ...     port=26379,
         ...     cache_type="sentinel",
-        ...     master_name="mymaster"
+        ...     master_name="mymaster",
         ... )
         >>> node = SentinelRedisNode(config)
     """

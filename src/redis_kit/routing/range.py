@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Tencent is pleased to support the open source community by making 蓝鲸智云 - 监控平台 (BlueKing - Monitor) available.
 Copyright (C) 2017-2025 Tencent. All rights reserved.
@@ -14,7 +13,6 @@ redis-kit 范围路由策略模块
 """
 
 from bisect import bisect_right
-from typing import List, Optional
 
 from redis_kit.exceptions import NoAvailableNodeError, RoutingTableError
 from redis_kit.routing.base import BaseRoutingStrategy
@@ -38,11 +36,13 @@ class RangeRoutingStrategy(BaseRoutingStrategy):
         - 100 < shard_key <= 200: node2
         - 200 < shard_key <= 1000: node3
 
-        >>> strategy = RangeRoutingStrategy([
-        ...     (100, "node1"),
-        ...     (200, "node2"),
-        ...     (1000, "node3"),
-        ... ])
+        >>> strategy = RangeRoutingStrategy(
+        ...     [
+        ...         (100, "node1"),
+        ...         (200, "node2"),
+        ...         (1000, "node3"),
+        ...     ]
+        ... )
         >>> node = strategy.route("150", nodes)  # 返回 node2
     """
 
@@ -54,8 +54,8 @@ class RangeRoutingStrategy(BaseRoutingStrategy):
             routing_table: 路由表，格式为 [(score, node_id), ...]
         """
         self._routing_table: RoutingTable = []
-        self._scores: List[int] = []
-        self._node_ids: List[str] = []
+        self._scores: list[int] = []
+        self._node_ids: list[str] = []
 
         if routing_table:
             self.update_routing_table(routing_table)
@@ -116,7 +116,7 @@ class RangeRoutingStrategy(BaseRoutingStrategy):
         return True
 
     def route(
-        self, shard_key: Optional[str], nodes: List[RedisNodeProtocol]
+        self, shard_key: str | None, nodes: list[RedisNodeProtocol]
     ) -> RedisNodeProtocol:
         """
         根据分片键的数值范围选择节点
@@ -175,7 +175,7 @@ class RangeRoutingStrategy(BaseRoutingStrategy):
         """
         return self._routing_table.copy()
 
-    def get_node_id_for_key(self, shard_key: str) -> Optional[str]:
+    def get_node_id_for_key(self, shard_key: str) -> str | None:
         """
         获取分片键对应的节点 ID（不检查节点可用性）
 
@@ -213,7 +213,7 @@ class ModuloRoutingStrategy(BaseRoutingStrategy):
     """
 
     def route(
-        self, shard_key: Optional[str], nodes: List[RedisNodeProtocol]
+        self, shard_key: str | None, nodes: list[RedisNodeProtocol]
     ) -> RedisNodeProtocol:
         """
         根据分片键取模选择节点

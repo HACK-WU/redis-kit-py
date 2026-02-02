@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Tencent is pleased to support the open source community by making 蓝鲸智云 - 监控平台 (BlueKing - Monitor) available.
 Copyright (C) 2017-2025 Tencent. All rights reserved.
@@ -16,7 +15,8 @@ redis-kit 重试处理器模块
 import random
 import time
 from functools import wraps
-from typing import Callable, Tuple, Type, TypeVar
+from typing import TypeVar
+from collections.abc import Callable
 
 from redis_kit.exceptions import RetryExhaustedError
 from redis_kit.types import RetryPolicy
@@ -105,7 +105,7 @@ def with_retry(
     backoff_base: float = 0.1,
     backoff_max: float = 5.0,
     backoff_multiplier: float = 2.0,
-    retryable_exceptions: Tuple[Type[Exception], ...] = None,
+    retryable_exceptions: tuple[type[Exception], ...] = None,
 ) -> Callable[[Callable[..., T]], Callable[..., T]]:
     """
     重试装饰器

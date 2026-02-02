@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Tencent is pleased to support the open source community by making 蓝鲸智云 - 监控平台 (BlueKing - Monitor) available.
 Copyright (C) 2017-2025 Tencent. All rights reserved.
@@ -67,7 +66,6 @@ class TestDelayQueue:
         client = MagicMock()
 
         # 模拟有2个就绪任务
-        now = time.time()
         task1_id = "task1"
         task2_id = "task2"
 

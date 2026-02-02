@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Tencent is pleased to support the open source community by making 蓝鲸智云 - 监控平台 (BlueKing - Monitor) available.
 Copyright (C) 2017-2025 Tencent. All rights reserved.
@@ -109,7 +108,7 @@ class TestRangeRoutingStrategy:
 
         # 可能会抛出异常，或者在初始化时检测到
         with pytest.raises(RoutingTableError):
-            strategy = RangeRoutingStrategy(routing_table)
+            RangeRoutingStrategy(routing_table)
 
 
 class TestModuloRoutingStrategy:

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Tencent is pleased to support the open source community by making 蓝鲸智云 - 监控平台 (BlueKing - Monitor) available.
 Copyright (C) 2017-2025 Tencent. All rights reserved.
@@ -13,7 +12,7 @@ redis-kit Hash 路由策略模块
 提供基于 Hash 的路由策略实现
 """
 
-from typing import Callable, List, Optional
+from collections.abc import Callable
 
 from redis_kit.exceptions import NoAvailableNodeError
 from redis_kit.routing.base import BaseRoutingStrategy
@@ -50,7 +49,7 @@ class HashRoutingStrategy(BaseRoutingStrategy):
         self.hash_func = hash_func or hash
 
     def route(
-        self, shard_key: Optional[str], nodes: List[RedisNodeProtocol]
+        self, shard_key: str | None, nodes: list[RedisNodeProtocol]
     ) -> RedisNodeProtocol:
         """
         根据分片键的 hash 值选择节点
@@ -106,7 +105,7 @@ class ConsistentHashRoutingStrategy(BaseRoutingStrategy):
         """
         self.virtual_nodes = virtual_nodes
         self.hash_func = hash_func or self._default_hash
-        self._ring: List[tuple] = []  # [(hash_value, node), ...]
+        self._ring: list[tuple] = []  # [(hash_value, node), ...]
         self._nodes_hash: int = 0  # 节点列表的 hash，用于检测变化
 
     def _default_hash(self, key: str) -> int:
@@ -117,7 +116,7 @@ class ConsistentHashRoutingStrategy(BaseRoutingStrategy):
             h = (h * 16777619) & 0xFFFFFFFF
         return h
 
-    def _build_ring(self, nodes: List[RedisNodeProtocol]) -> None:
+    def _build_ring(self, nodes: list[RedisNodeProtocol]) -> None:
         """构建 hash 环"""
         nodes_hash = hash(tuple(n.node_id for n in nodes))
         if nodes_hash == self._nodes_hash and self._ring:
@@ -136,7 +135,7 @@ class ConsistentHashRoutingStrategy(BaseRoutingStrategy):
         self._nodes_hash = nodes_hash
 
     def route(
-        self, shard_key: Optional[str], nodes: List[RedisNodeProtocol]
+        self, shard_key: str | None, nodes: list[RedisNodeProtocol]
     ) -> RedisNodeProtocol:
         """
         使用一致性 hash 选择节点

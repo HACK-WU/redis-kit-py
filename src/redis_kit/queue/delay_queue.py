@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Tencent is pleased to support the open source community by making 蓝鲸智云 - 监控平台 (BlueKing - Monitor) available.
 Copyright (C) 2017-2025 Tencent. All rights reserved.
@@ -17,7 +16,8 @@ import json
 import logging
 import threading
 import time
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any
+from collections.abc import Callable
 
 from redis_kit.exceptions import TaskAlreadyExistsError
 
@@ -114,7 +114,7 @@ class DelayQueue:
         results = pipeline.execute()
         return all(r is not None for r in results[:2])
 
-    def push_many(self, tasks: List[Tuple[str, Any, float]]) -> int:
+    def push_many(self, tasks: list[tuple[str, Any, float]]) -> int:
         """
         批量推送任务
 
@@ -151,7 +151,7 @@ class DelayQueue:
 
         return success_count
 
-    def pop_ready(self, batch_size: int = 100) -> List[Tuple[str, Any]]:
+    def pop_ready(self, batch_size: int = 100) -> list[tuple[str, Any]]:
         """
         获取并移除已到期的任务
 
@@ -205,7 +205,7 @@ class DelayQueue:
 
         return tasks
 
-    def peek_ready(self, batch_size: int = 100) -> List[Tuple[str, Any]]:
+    def peek_ready(self, batch_size: int = 100) -> list[tuple[str, Any]]:
         """
         查看已到期的任务（不移除）
 
@@ -236,7 +236,7 @@ class DelayQueue:
 
         return tasks
 
-    def get(self, task_id: str) -> Optional[Tuple[Any, float]]:
+    def get(self, task_id: str) -> tuple[Any, float] | None:
         """
         获取任务详情
 
@@ -276,7 +276,7 @@ class DelayQueue:
         results = pipeline.execute()
         return any(results)
 
-    def cancel_many(self, task_ids: List[str]) -> int:
+    def cancel_many(self, task_ids: list[str]) -> int:
         """
         批量取消任务
 
@@ -409,7 +409,7 @@ class DelayQueueWorker:
         self.error_handler = error_handler or self._default_error_handler
 
         self._running = False
-        self._thread: Optional[threading.Thread] = None
+        self._thread: threading.Thread | None = None
         self._stop_event = threading.Event()
 
     def _default_error_handler(
@@ -507,8 +507,8 @@ class DelayQueueManager:
 
     def __init__(self):
         """初始化队列管理器"""
-        self._queues: Dict[str, DelayQueue] = {}
-        self._workers: Dict[str, DelayQueueWorker] = {}
+        self._queues: dict[str, DelayQueue] = {}
+        self._workers: dict[str, DelayQueueWorker] = {}
 
     def add_queue(
         self,
@@ -538,7 +538,7 @@ class DelayQueueManager:
 
         return queue
 
-    def get_queue(self, queue_name: str) -> Optional[DelayQueue]:
+    def get_queue(self, queue_name: str) -> DelayQueue | None:
         """获取队列"""
         return self._queues.get(queue_name)
 

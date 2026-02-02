@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Tencent is pleased to support the open source community by making 蓝鲸智云 - 监控平台 (BlueKing - Monitor) available.
 Copyright (C) 2017-2025 Tencent. All rights reserved.
@@ -13,7 +12,7 @@ redis-kit 键类型定义模块
 提供各种 Redis 数据结构对应的键类型实现
 """
 
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from redis_kit.exceptions import KeyTemplateError
 from redis_kit.keys.base import RedisDataKey
@@ -27,14 +26,12 @@ class StringKey(RedisDataKey):
 
     Example:
         >>> config_key = StringKey(
-        ...     key_tpl="config:{config_name}",
-        ...     ttl=3600,
-        ...     backend="cache"
+        ...     key_tpl="config:{config_name}", ttl=3600, backend="cache"
         ... )
         >>> key = config_key.get_key(config_name="app_settings")
     """
 
-    def get(self, **key_kwargs) -> Optional[str]:
+    def get(self, **key_kwargs) -> str | None:
         """获取字符串值"""
         key = self.get_key(**key_kwargs)
         return self.client.get(key)
@@ -74,7 +71,7 @@ class HashKey(RedisDataKey):
         ...     key_tpl="user:{user_id}",
         ...     field_tpl="{field_name}",
         ...     ttl=3600,
-        ...     backend="cache"
+        ...     backend="cache",
         ... )
         >>> key = user_hash.get_key(user_id=123)
         >>> field = user_hash.get_field(field_name="email")
@@ -105,14 +102,14 @@ class HashKey(RedisDataKey):
         """
         return self.field_tpl.format(**kwargs)
 
-    def hget(self, field_kwargs: Dict[str, Any] = None, **key_kwargs) -> Optional[str]:
+    def hget(self, field_kwargs: dict[str, Any] = None, **key_kwargs) -> str | None:
         """获取 Hash 字段值"""
         key = self.get_key(**key_kwargs)
         field = self.get_field(**(field_kwargs or {}))
         return self.client.hget(key, field)
 
     def hset(
-        self, value: str, field_kwargs: Dict[str, Any] = None, **key_kwargs
+        self, value: str, field_kwargs: dict[str, Any] = None, **key_kwargs
     ) -> int:
         """设置 Hash 字段值"""
         key = self.get_key(**key_kwargs)
@@ -121,37 +118,37 @@ class HashKey(RedisDataKey):
         self.client.expire(key, self.ttl)
         return result
 
-    def hdel(self, field_kwargs: Dict[str, Any] = None, **key_kwargs) -> int:
+    def hdel(self, field_kwargs: dict[str, Any] = None, **key_kwargs) -> int:
         """删除 Hash 字段"""
         key = self.get_key(**key_kwargs)
         field = self.get_field(**(field_kwargs or {}))
         return self.client.hdel(key, field)
 
-    def hgetall(self, **key_kwargs) -> Dict[str, str]:
+    def hgetall(self, **key_kwargs) -> dict[str, str]:
         """获取 Hash 所有字段和值"""
         key = self.get_key(**key_kwargs)
         return self.client.hgetall(key)
 
-    def hmset(self, mapping: Dict[str, str], **key_kwargs) -> bool:
+    def hmset(self, mapping: dict[str, str], **key_kwargs) -> bool:
         """批量设置 Hash 字段"""
         key = self.get_key(**key_kwargs)
         result = self.client.hset(key, mapping=mapping)
         self.client.expire(key, self.ttl)
         return result
 
-    def hmget(self, fields: List[str], **key_kwargs) -> List[Optional[str]]:
+    def hmget(self, fields: list[str], **key_kwargs) -> list[str | None]:
         """批量获取 Hash 字段值"""
         key = self.get_key(**key_kwargs)
         return self.client.hmget(key, fields)
 
-    def hexists(self, field_kwargs: Dict[str, Any] = None, **key_kwargs) -> bool:
+    def hexists(self, field_kwargs: dict[str, Any] = None, **key_kwargs) -> bool:
         """检查 Hash 字段是否存在"""
         key = self.get_key(**key_kwargs)
         field = self.get_field(**(field_kwargs or {}))
         return self.client.hexists(key, field)
 
     def hincrby(
-        self, amount: int = 1, field_kwargs: Dict[str, Any] = None, **key_kwargs
+        self, amount: int = 1, field_kwargs: dict[str, Any] = None, **key_kwargs
     ) -> int:
         """递增 Hash 字段值"""
         key = self.get_key(**key_kwargs)
@@ -167,9 +164,7 @@ class SetKey(RedisDataKey):
 
     Example:
         >>> tags_key = SetKey(
-        ...     key_tpl="article:{article_id}:tags",
-        ...     ttl=86400,
-        ...     backend="cache"
+        ...     key_tpl="article:{article_id}:tags", ttl=86400, backend="cache"
         ... )
     """
 
@@ -200,12 +195,12 @@ class SetKey(RedisDataKey):
         key = self.get_key(**key_kwargs)
         return self.client.scard(key)
 
-    def spop(self, count: int = 1, **key_kwargs) -> Optional[str]:
+    def spop(self, count: int = 1, **key_kwargs) -> str | None:
         """随机移除并返回成员"""
         key = self.get_key(**key_kwargs)
         return self.client.spop(key, count)
 
-    def srandmember(self, count: int = 1, **key_kwargs) -> List[str]:
+    def srandmember(self, count: int = 1, **key_kwargs) -> list[str]:
         """随机获取成员（不移除）"""
         key = self.get_key(**key_kwargs)
         return self.client.srandmember(key, count)
@@ -218,11 +213,7 @@ class ListKey(RedisDataKey):
     用于管理 Redis List 类型的键
 
     Example:
-        >>> queue_key = ListKey(
-        ...     key_tpl="queue:{queue_name}",
-        ...     ttl=3600,
-        ...     backend="queue"
-        ... )
+        >>> queue_key = ListKey(key_tpl="queue:{queue_name}", ttl=3600, backend="queue")
     """
 
     def lpush(self, *values: str, **key_kwargs) -> int:
@@ -239,21 +230,21 @@ class ListKey(RedisDataKey):
         self.client.expire(key, self.ttl)
         return result
 
-    def lpop(self, count: int = None, **key_kwargs) -> Optional[str]:
+    def lpop(self, count: int = None, **key_kwargs) -> str | None:
         """从左侧弹出元素"""
         key = self.get_key(**key_kwargs)
         if count:
             return self.client.lpop(key, count)
         return self.client.lpop(key)
 
-    def rpop(self, count: int = None, **key_kwargs) -> Optional[str]:
+    def rpop(self, count: int = None, **key_kwargs) -> str | None:
         """从右侧弹出元素"""
         key = self.get_key(**key_kwargs)
         if count:
             return self.client.rpop(key, count)
         return self.client.rpop(key)
 
-    def lrange(self, start: int = 0, end: int = -1, **key_kwargs) -> List[str]:
+    def lrange(self, start: int = 0, end: int = -1, **key_kwargs) -> list[str]:
         """获取列表范围内的元素"""
         key = self.get_key(**key_kwargs)
         return self.client.lrange(key, start, end)
@@ -263,7 +254,7 @@ class ListKey(RedisDataKey):
         key = self.get_key(**key_kwargs)
         return self.client.llen(key)
 
-    def lindex(self, index: int, **key_kwargs) -> Optional[str]:
+    def lindex(self, index: int, **key_kwargs) -> str | None:
         """获取指定位置的元素"""
         key = self.get_key(**key_kwargs)
         return self.client.lindex(key, index)
@@ -287,15 +278,13 @@ class SortedSetKey(RedisDataKey):
 
     Example:
         >>> leaderboard_key = SortedSetKey(
-        ...     key_tpl="leaderboard:{game_id}",
-        ...     ttl=86400,
-        ...     backend="cache"
+        ...     key_tpl="leaderboard:{game_id}", ttl=86400, backend="cache"
         ... )
     """
 
     def zadd(
         self,
-        mapping: Dict[str, float],
+        mapping: dict[str, float],
         nx: bool = False,
         xx: bool = False,
         **key_kwargs,
@@ -311,31 +300,31 @@ class SortedSetKey(RedisDataKey):
         key = self.get_key(**key_kwargs)
         return self.client.zrem(key, *members)
 
-    def zscore(self, member: str, **key_kwargs) -> Optional[float]:
+    def zscore(self, member: str, **key_kwargs) -> float | None:
         """获取成员分数"""
         key = self.get_key(**key_kwargs)
         return self.client.zscore(key, member)
 
-    def zrank(self, member: str, **key_kwargs) -> Optional[int]:
+    def zrank(self, member: str, **key_kwargs) -> int | None:
         """获取成员排名（从小到大）"""
         key = self.get_key(**key_kwargs)
         return self.client.zrank(key, member)
 
-    def zrevrank(self, member: str, **key_kwargs) -> Optional[int]:
+    def zrevrank(self, member: str, **key_kwargs) -> int | None:
         """获取成员排名（从大到小）"""
         key = self.get_key(**key_kwargs)
         return self.client.zrevrank(key, member)
 
     def zrange(
         self, start: int = 0, end: int = -1, withscores: bool = False, **key_kwargs
-    ) -> List:
+    ) -> list:
         """获取范围内的成员（按分数从小到大）"""
         key = self.get_key(**key_kwargs)
         return self.client.zrange(key, start, end, withscores=withscores)
 
     def zrevrange(
         self, start: int = 0, end: int = -1, withscores: bool = False, **key_kwargs
-    ) -> List:
+    ) -> list:
         """获取范围内的成员（按分数从大到小）"""
         key = self.get_key(**key_kwargs)
         return self.client.zrevrange(key, start, end, withscores=withscores)
@@ -348,7 +337,7 @@ class SortedSetKey(RedisDataKey):
         num: int = None,
         withscores: bool = False,
         **key_kwargs,
-    ) -> List:
+    ) -> list:
         """按分数范围获取成员"""
         key = self.get_key(**key_kwargs)
         return self.client.zrangebyscore(

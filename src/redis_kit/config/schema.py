@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Tencent is pleased to support the open source community by making 蓝鲸智云 - 监控平台 (BlueKing - Monitor) available.
 Copyright (C) 2017-2025 Tencent. All rights reserved.
@@ -14,7 +13,7 @@ redis-kit 配置 Schema 模块
 """
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, Optional
+from typing import Any
 
 from redis_kit.types import BackendConfig, NodeConfig, RoutingTable
 
@@ -51,7 +50,7 @@ class RedisKitConfig:
     """
 
     # 节点配置
-    nodes: Dict[str, NodeConfig] = field(default_factory=dict)
+    nodes: dict[str, NodeConfig] = field(default_factory=dict)
     default_node: str = "default"
 
     # 路由配置
@@ -59,7 +58,7 @@ class RedisKitConfig:
     routing_table: RoutingTable = field(default_factory=list)
 
     # 后端配置
-    backends: Dict[str, BackendConfig] = field(default_factory=dict)
+    backends: dict[str, BackendConfig] = field(default_factory=dict)
 
     # 键前缀
     key_prefix: str = ""
@@ -80,7 +79,7 @@ class RedisKitConfig:
     pool_max_connections: int = 10
     pool_min_idle_connections: int = 1
 
-    def get_node(self, node_id: str = None) -> Optional[NodeConfig]:
+    def get_node(self, node_id: str = None) -> NodeConfig | None:
         """
         获取节点配置
 
@@ -93,7 +92,7 @@ class RedisKitConfig:
         node_id = node_id or self.default_node
         return self.nodes.get(node_id)
 
-    def get_backend(self, backend_name: str) -> Optional[BackendConfig]:
+    def get_backend(self, backend_name: str) -> BackendConfig | None:
         """
         获取后端配置
 
@@ -120,7 +119,7 @@ class RedisKitConfig:
         return backend.db if backend else default_db
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "RedisKitConfig":
+    def from_dict(cls, data: dict[str, Any]) -> "RedisKitConfig":
         """
         从字典创建配置
 
@@ -171,7 +170,7 @@ class RedisKitConfig:
             pool_min_idle_connections=data.get("pool_min_idle_connections", 1),
         )
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """
         转换为字典
 

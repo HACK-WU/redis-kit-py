@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Tencent is pleased to support the open source community by making 蓝鲸智云 - 监控平台 (BlueKing - Monitor) available.
 Copyright (C) 2017-2025 Tencent. All rights reserved.
@@ -8,18 +7,25 @@ Unless required by applicable law or agreed to in writing, software distributed 
 an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
 specific language governing permissions and limitations under the License.
 
-redis-kit 路由模块
+redis-kit 配置模块
 """
 
-from redis_kit.routing.base import BaseRoutingStrategy, RoutingManager
-from redis_kit.routing.hash import ConsistentHashRoutingStrategy, HashRoutingStrategy
-from redis_kit.routing.range import ModuloRoutingStrategy, RangeRoutingStrategy
+from redis_kit.config.loader import (
+    CompositeConfigLoader,
+    ConfigLoader,
+    DictConfigLoader,
+    EnvConfigLoader,
+    YamlConfigLoader,
+    load_config,
+)
+from redis_kit.config.schema import RedisKitConfig
 
 __all__ = [
-    "BaseRoutingStrategy",
-    "RoutingManager",
-    "HashRoutingStrategy",
-    "ConsistentHashRoutingStrategy",
-    "RangeRoutingStrategy",
-    "ModuloRoutingStrategy",
+    "RedisKitConfig",
+    "ConfigLoader",
+    "DictConfigLoader",
+    "YamlConfigLoader",
+    "EnvConfigLoader",
+    "CompositeConfigLoader",
+    "load_config",
 ]

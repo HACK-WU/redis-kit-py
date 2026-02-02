@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Tencent is pleased to support the open source community by making 蓝鲸智云 - 监控平台 (BlueKing - Monitor) available.
 Copyright (C) 2017-2025 Tencent. All rights reserved.
@@ -31,6 +30,7 @@ class BaseLock(ABC):
         ...     def acquire(self, blocking=True, timeout=None):
         ...         # 实现获取锁逻辑
         ...         pass
+        ...
         ...     def release(self):
         ...         # 实现释放锁逻辑
         ...         pass
