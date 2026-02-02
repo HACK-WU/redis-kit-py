@@ -47,10 +47,10 @@ optional-dependencies.dev = [
 ]
 optional-dependencies.metrics = [ "prometheus-client>=0.14" ]
 optional-dependencies.yaml = [ "pyyaml>=5" ]
-urls.Changelog = "https://github.com/TencentBlueKing/bk-monitor/blob/master/CHANGELOG.md"
-urls.Documentation = "https://github.com/TencentBlueKing/bk-monitor"
-urls.Homepage = "https://github.com/TencentBlueKing/bk-monitor"
-urls.Repository = "https://github.com/TencentBlueKing/bk-monitor"
+urls.Changelog = "https://github.com/HACK-WU/redis-kit-py/blob/master/CHANGELOG.md"
+urls.Documentation = "https://github.com/HACK-WU/redis-kit-py"
+urls.Homepage = "https://github.com/HACK-WU/redis-kit-py"
+urls.Repository = "https://github.com/HACK-WU/redis-kit-py"
 
 [dependency-groups]
 dev = [
