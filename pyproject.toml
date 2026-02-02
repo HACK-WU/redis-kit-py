@@ -11,10 +11,10 @@ readme = "README.md"
 keywords = [ "cache", "delay-queue", "distributed-lock", "redis", "routing" ]
 license = { text = "MIT" }
 maintainers = [
-  { name = "BlueKing Monitor Team", email = "contactus_bk@tencent.com" },
+  { name = "HACK-WU" },
 ]
 authors = [
-  { name = "BlueKing Monitor Team", email = "contactus_bk@tencent.com" },
+  { name = "HACK-WU" },
 ]
 requires-python = ">=3.8"
 classifiers = [
@@ -59,59 +59,32 @@ dev = [
   "pre-commit>=3.5",
 ]
 
-[tool.setuptools.packages.find]
-where = [ "." ]
-include = [ "redis_kit*" ]
 
-[tool.black]
-line-length = 120
-target-version = [ "py38", "py39", "py310", "py311" ]
-include = '\.pyi?$'
-exclude = '''
-/(
-    \.git
-    | \.hg
-    | \.mypy_cache
-    | \.tox
-    | \.venv
-    | _build
-    | buck-out
-    | build
-    | dist
-)/
-'''
+[tool.hatch.build.targets.wheel]
+packages = [ "src/redis_kit" ]
 
-[tool.isort]
-profile = "black"
-line_length = 120
-known_first_party = [ "redis_kit" ]
-skip = [ ".git", ".venv", "build", "dist" ]
+
+[tool.ruff]
+format.docstring-code-format = true
+lint.select = [ "E4", "E7", "E9", "F", "UP" ]
+lint.extend-ignore = [ "E402" ]
+lint.fixable = [ "ALL" ]
+lint.extend-safe-fixes = [ "UP" ]
+
+
 
 [tool.pytest.ini_options]
-minversion = "7.0"
-addopts = "-ra -q --cov=redis_kit --cov-report=term-missing"
 testpaths = [ "tests" ]
-python_files = [ "test_*.py", "*_test.py" ]
+python_files = [ "test_*.py" ]
 python_classes = [ "Test*" ]
 python_functions = [ "test_*" ]
-
-[tool.coverage.run]
-source = [ "redis_kit" ]
-branch = true
-omit = [ "*/tests/*", "*/__pycache__/*" ]
-
-[tool.coverage.report]
-exclude_lines = [
-  "pragma: no cover",
-  "def __repr__",
-  "raise NotImplementedError",
-  "if TYPE_CHECKING:",
-  "if __name__ == .__main__.:",
+addopts = [
+  "--strict-markers",
+  "--strict-config",
+  "--cov=elasticflow",
+  "--cov-report=term-missing",
 ]
-
-[tool.mypy]
-python_version = "3.8"
-warn_return_any = true
-warn_unused_configs = true
-ignore_missing_imports = true
-exclude = [ "build", "dist", ".venv" ]
+markers = [
+  "slow: marks tests as slow",
+  "integration: marks tests as integration tests",
+]
